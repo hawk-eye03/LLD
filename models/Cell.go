@@ -1,5 +1,7 @@
 package models
 
+import "fmt"
+
 type Cell struct {
 	row       int
 	col       int
@@ -7,34 +9,42 @@ type Cell struct {
 	player    Player
 }
 
-func (c *Cell) getRow() int {
+func (c *Cell) GetRow() int {
 	return c.row
 }
 
-func (c *Cell) getCol() int {
+func (c *Cell) GetCol() int {
 	return c.col
 }
 
-func (c *Cell) getCellState() CellState {
+func (c *Cell) GetCellState() CellState {
 	return c.cellState
 }
 
-func (c *Cell) getPlayer() Player {
+func (c *Cell) GetPlayer() Player {
 	return c.player
 }
 
-func (c *Cell) setPlayer(player Player) {
+func (c *Cell) SetPlayer(player Player) {
 	c.player = player
 }
 
-func (c *Cell) setRow(row int) {
+func (c *Cell) SetRow(row int) {
 	c.row = row
 }
 
-func (c *Cell) setCol(col int) {
+func (c *Cell) SetCol(col int) {
 	c.col = col
 }
 
-func (c *Cell) setCellState(cellState CellState) {
+func (c *Cell) SetCellState(cellState CellState) {
 	c.cellState = cellState
+}
+
+func (c *Cell) Display() {
+	if c.cellState == EMPTY {
+		fmt.Println(" - |")
+	} else {
+		fmt.Println(" " + c.player.symbol + " |")
+	}
 }

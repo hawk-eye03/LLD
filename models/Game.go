@@ -1,6 +1,8 @@
 package models
 
-import "github.com/hawk-eye03/LLD/TicTacToe/strategies/winningStrategies"
+import (
+	"github.com/hawk-eye03/LLD/TicTacToe/strategies/winningStrategies"
+)
 
 type Game struct {
 	board             Board
@@ -12,58 +14,62 @@ type Game struct {
 	winner            Player
 }
 
-func (g *Game) setBoard(b Board) {
+func (g *Game) SetBoard(b Board) {
 	g.board = b
 }
 
-func (g *Game) setPlayers(p []Player) {
+func (g *Game) SetPlayers(p []Player) {
 	g.players = p
 }
 
-func (g *Game) setMoves(m []Move) {
+func (g *Game) SetMoves(m []Move) {
 	g.moves = m
 }
 
-func (g *Game) setWinningStrategies(winningStrategies []winningStrategies.WinningStrategy) {
+func (g *Game) SetWinningStrategies(winningStrategies []winningStrategies.WinningStrategy) {
 	g.winningStrategies = winningStrategies
 }
 
-func (g *Game) setGameState(gameState GameState) {
+func (g *Game) SetGameState(gameState GameState) {
 	g.gameStatus = gameState
 }
 
-func (g *Game) setNextMovePlayerInd(ind int) {
+func (g *Game) SetNextMovePlayerInd(ind int) {
 	g.nextMovePlayerInd = ind
 }
 
-func (g *Game) setWinner(winner Player) {
+func (g *Game) SetWinner(winner Player) {
 	g.winner = winner
 }
 
-func (g *Game) getBoard() Board {
+func (g *Game) GetBoard() Board {
 	return g.board
 }
 
-func (g *Game) getPlayers() []Player {
+func (g *Game) GetPlayers() []Player {
 	return g.players
 }
 
-func (g *Game) getMoves() []Move {
+func (g *Game) GetMoves() []Move {
 	return g.moves
 }
 
-func (g *Game) getWinningStrategies() []winningStrategies.WinningStrategy {
+func (g *Game) GetWinningStrategies() []winningStrategies.WinningStrategy {
 	return g.winningStrategies
 }
 
-func (g *Game) getGameState() GameState {
+func (g *Game) GetGameState() GameState {
 	return g.gameStatus
 }
 
-func (g *Game) getNextMovePlayerInd() int {
+func (g *Game) GetNextMovePlayerInd() int {
 	return g.nextMovePlayerInd
 }
 
-func (g *Game) getWinner() Player {
+func (g *Game) GetWinner() Player {
 	return g.winner
+}
+
+func (g *Game) PrintBoard() {
+	g.board.Print()
 }
