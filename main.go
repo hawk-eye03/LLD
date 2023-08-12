@@ -1,46 +1,47 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 
 	"github.com/hawk-eye03/LLD/TicTacToe/controllers"
 	"github.com/hawk-eye03/LLD/TicTacToe/models"
 )
 
 func main() {
-	// Create a new Game
+	// Initialize Game Controller
 	gameController := controllers.GameController{}
-	game := gameController.CreateGame()
 
-	scanner := bufio.NewScanner(os.Stdin)
+	// Initialize number of players
+	players := []models.IPlayer{
+		models.NewPlayer("X", "P1", models.HUMAN),
+		models.NewBot(models.EASY, models.NewPlayer("O", "P2", models.BOT)),
+	}
 
-	for gameController.GetGameStatus() == models.IN_PROGRESS {
-		// Print the board
+	// Create a new Game with set of dimension, players & winning strategies
+	game := gameController.CreateGame(3, players, nil)
+
+	for gameController.GetGameStatus(game) == models.IN_PROGRESS {
+		// Print the current state of board
+		fmt.Println("\nBelow is the current state of the game")
 		gameController.DisplayBoard(game)
 
-		// Ask user do you want to undo (y/n)? (take input in terminal)
+		// Ask user do you want to undo (y/n)?
 		// if y -> undo
 		// if n -> take input of row and col to make move
-		fmt.Println("Do you want to undo (y/n)")
-		// Read the input from the user
-		scanner.Scan()
-		// Get the input as a string
-		input := scanner.Text()
+		var input string
+
+		fmt.Println("Does anyone want to undo (y/n)")
+		fmt.Scanln(&input)
+		fmt.Println()
 
 		if input == "y" {
 			gameController.Undo()
+		} else if input == "n" {
+			gameController.Makemove(game)
 		} else {
-			// make move
-			gameController.Makemove()
+			fmt.Println("Invalid input!")
 		}
 	}
 
-	// check status of game
-	// if winner -> print winner
-	// else print draw
-
-	gameController.PrintResult(gameController)
-
+	gameController.PrintResult(*game)
 }

@@ -5,18 +5,25 @@ type Move struct {
 	cell   Cell
 }
 
-func (m *Move) setPlayer(p Player) {
+func NewMove(player Player, cell Cell) *Move {
+	return &Move{
+		player: player,
+		cell:   cell,
+	}
+}
+
+func (m *Move) SetPlayer(p Player) {
 	m.player = p
 }
 
-func (m *Move) setCell(c Cell) {
+func (m *Move) SetCell(c Cell) {
 	m.cell = c
 }
 
-func (m *Move) getPlayer() Player {
+func (m *Move) GetPlayer() Player {
 	return m.player
 }
 
-func (m *Move) getCell() Cell {
+func (m *Move) GetCell() Cell {
 	return m.cell
 }

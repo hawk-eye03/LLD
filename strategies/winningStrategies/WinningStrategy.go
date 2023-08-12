@@ -1,3 +1,5 @@
 package winningStrategies
 
-type WinningStrategy interface{}
+type WinningStrategy interface {
+	CheckWinner() bool
+}

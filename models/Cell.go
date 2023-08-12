@@ -9,6 +9,14 @@ type Cell struct {
 	player    Player
 }
 
+func NewCell(row, col int) *Cell {
+	return &Cell{
+		row:       row,
+		col:       col,
+		cellState: EMPTY,
+	}
+}
+
 func (c *Cell) GetRow() int {
 	return c.row
 }
@@ -43,8 +51,8 @@ func (c *Cell) SetCellState(cellState CellState) {
 
 func (c *Cell) Display() {
 	if c.cellState == EMPTY {
-		fmt.Println(" - |")
+		fmt.Print(" - |")
 	} else {
-		fmt.Println(" " + c.player.symbol + " |")
+		fmt.Print(" " + c.player.symbol + " |")
 	}
 }

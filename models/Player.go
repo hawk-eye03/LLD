@@ -1,40 +1,44 @@
 package models
 
+import "fmt"
+
 type Player struct {
 	symbol     string
 	name       string
-	id         int
 	playerType PlayerType
 }
 
-func (p *Player) setSymbol(symbol string) {
+func NewPlayer(symbol string, name string, playerType PlayerType) *Player {
+	return &Player{
+		symbol:     symbol,
+		name:       name,
+		playerType: playerType,
+	}
+}
+
+func (p *Player) GetInfo() {
+	fmt.Println("I am a Human")
+}
+func (p *Player) SetSymbol(symbol string) {
 	p.symbol = symbol
 }
 
-func (p *Player) setName(name string) {
+func (p *Player) SetName(name string) {
 	p.name = name
 }
 
-func (p *Player) setID(id int) {
-	p.id = id
-}
-
-func (p *Player) setPlayerType(playerType PlayerType) {
+func (p *Player) SetPlayerType(playerType PlayerType) {
 	p.playerType = playerType
 }
 
-func (p *Player) getPlayerType() PlayerType {
+func (p *Player) GetPlayerType() PlayerType {
 	return p.playerType
 }
 
-func (p *Player) getID() int {
-	return p.id
-}
-
-func (p *Player) getSymbol() string {
+func (p *Player) GetSymbol() string {
 	return p.symbol
 }
 
-func (p *Player) getname() string {
+func (p *Player) GetName() string {
 	return p.name
 }

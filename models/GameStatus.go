@@ -1,10 +1,9 @@
 package models
 
-type GameState int 
+type GameState int
 
-const(
+const (
 	IN_PROGRESS = iota
-	WIN
+	ENDED
 	DRAW
-	PAUSE 
 )
