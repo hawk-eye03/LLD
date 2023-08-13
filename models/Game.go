@@ -2,15 +2,13 @@ package models
 
 import (
 	"fmt"
-
-	"github.com/hawk-eye03/LLD/TicTacToe/strategies/winningStrategies"
 )
 
 type Game struct {
 	board                Board
 	players              []IPlayer
 	moves                []Move
-	winningStrategies    []winningStrategies.WinningStrategy
+	winningStrategies    []WinningStrategy
 	gameState            GameState
 	currentMovePlayerInd int
 	winner               Player
@@ -29,7 +27,7 @@ func newGame(builder *GameBuilder) *Game {
 type GameBuilder struct {
 	dimension         int
 	players           []IPlayer
-	winningStrategies []winningStrategies.WinningStrategy
+	winningStrategies []WinningStrategy
 }
 
 func (g *GameBuilder) SetDimension(dimension int) *GameBuilder {
@@ -42,7 +40,7 @@ func (g *GameBuilder) SetPlayers(players []IPlayer) *GameBuilder {
 	return g
 }
 
-func (g *GameBuilder) SetWinningStrategies(winningStrategies []winningStrategies.WinningStrategy) *GameBuilder {
+func (g *GameBuilder) SetWinningStrategies(winningStrategies []WinningStrategy) *GameBuilder {
 	g.winningStrategies = winningStrategies
 	return g
 }
@@ -103,15 +101,11 @@ func (g *Game) SetBoard(b Board) {
 	g.board = b
 }
 
-// func (g *Game) SetPlayers(p []Player) {
-// 	g.players = p
-// }
-
 func (g *Game) SetMoves(m []Move) {
 	g.moves = m
 }
 
-func (g *Game) SetWinningStrategies(winningStrategies []winningStrategies.WinningStrategy) {
+func (g *Game) SetWinningStrategies(winningStrategies []WinningStrategy) {
 	g.winningStrategies = winningStrategies
 }
 
@@ -120,7 +114,6 @@ func (g *Game) SetGameState(gameState GameState) {
 }
 
 func (g *Game) SetCurrMovePlayerInd(ind int) {
-	fmt.Println("setting index=", ind)
 	g.currentMovePlayerInd = ind
 }
 
@@ -140,7 +133,7 @@ func (g *Game) GetMoves() []Move {
 	return g.moves
 }
 
-func (g *Game) GetWinningStrategies() []winningStrategies.WinningStrategy {
+func (g *Game) GetWinningStrategies() []WinningStrategy {
 	return g.winningStrategies
 }
 
@@ -164,62 +157,41 @@ func (g *Game) PrintResult() {
 	gameState := g.GetGameState()
 	if gameState == ENDED {
 		fmt.Println("\nGame has Ended!")
-		fmt.Println("Winner is: ", g.winner)
+		fmt.Println("Winner is: ", g.winner.GetName())
+		fmt.Println()
 	} else {
 		fmt.Println("\nGame Drawn!")
+		fmt.Println()
 	}
 }
 
 // Display player name who has the current turn
 func (g *Game) GetPlayerAndDisplayTurn() Player {
+	var playerInfo *Player
+
 	players := g.GetPlayers()
-
 	currentPlayer := players[g.GetCurrMovePlayerInd()]
-	player := ""
-	var playerInfo Player
+	playerInfo = getPlayerInfo(currentPlayer)
 
-	switch p := currentPlayer.(type) {
-	case *Bot:
-		playerInfo = p.GetBotPlayerInfo()
-		player = playerInfo.GetName()
-	case *Player:
-		playerInfo = *p
-		player = p.GetName()
-	}
-	fmt.Println("It is ", player, "'s turn")
-	return playerInfo
-}
+	fmt.Println("It is " + playerInfo.GetName() + "'s turn")
 
-// Take input of next move
-func (g *Game) TakeInput() (int, int) {
-	var row, col int
-	fmt.Print("Enter row (starting from 0): ")
-	_, err1 := fmt.Scanln(&row)
-	if err1 != nil {
-		fmt.Println("Invalid input for row. Please enter an integer.")
-		return -1, -1
-	}
-
-	fmt.Print("Enter col (starting from 0): ")
-	_, err2 := fmt.Scanln(&col)
-	if err2 != nil {
-		fmt.Println("Invalid input for col. Please enter an integer.")
-		return -1, -1
-	}
-	return row, col
+	return *playerInfo
 }
 
 func (g *Game) MakeMove() {
 	currPlayer := g.GetPlayerAndDisplayTurn()
-	row, col := g.TakeInput()
-	if row == -1 && col == -1 {
-		return
-	}
+	currentPlayer := g.players[g.GetCurrMovePlayerInd()]
+	proposedCell := currentPlayer.MakeMove(g)
 
-	if !(g.ValidateMove(row, col)) {
-		fmt.Println("Invalid move, enter a valid row and col!")
+	row := proposedCell.GetRow()
+	col := proposedCell.GetCol()
+
+	// check if the move given by player (Human/Bot) is valid or not
+	if !(g.ValidateMove(row, col)) || row == -1 && col == -1 {
+		fmt.Println("Invalid move. Retry")
 		return
 	}
+	fmt.Println("\nMove was made at row:", row, ", col:", col)
 
 	board := g.GetBoard()
 	cells := board.GetCells()
@@ -227,13 +199,13 @@ func (g *Game) MakeMove() {
 	cells[row][col].SetCellState(FILLED)
 	cells[row][col].SetPlayer(currPlayer)
 
-	move := NewMove(currPlayer, cells[row][col])
+	move := NewMove(currPlayer, &cells[row][col])
 
 	// append moves to list of moves in game
 	g.moves = append(g.moves, *move)
 
 	// check whether game is won or drawn after the move is complete
-	if g.CheckGameWon(currPlayer) {
+	if g.CheckGameWon(*move) {
 		return
 	}
 	if g.CheckGameDrawn() {
@@ -244,14 +216,32 @@ func (g *Game) MakeMove() {
 	g.SetCurrMovePlayerInd((g.GetCurrMovePlayerInd() + 1) % len(g.players))
 }
 
-func (g *Game) CheckGameWon(currPlayer Player) bool {
-	// for _ := range g.GetWinningStrategies() {
-	// 	// if winningStrategy.CheckWinner() {
-	// 	g.gameState = ENDED
-	// 	g.winner = currPlayer
-	// 	return true
-	// 	// }
-	// }
+func (g *Game) UndoMove() {
+	if len(g.moves) == 0 {
+		fmt.Println("No moves yet. Can't Undo.")
+		return
+	}
+	// remove last move
+	lastMove := g.moves[len(g.moves)-1]
+	lastCell := lastMove.GetCell()
+	g.moves = g.moves[:len(g.moves)-1]
+	g.currentMovePlayerInd = (g.currentMovePlayerInd - 1 + len(g.players)) % len(g.players)
+	lastCell.SetCellState(EMPTY)
+
+	for _, winningStrategy := range g.winningStrategies {
+		winningStrategy.HandleUndo(g.board.GetSize(), lastMove)
+	}
+}
+
+func (g *Game) CheckGameWon(move Move) bool {
+	for _, winningStrategy := range g.GetWinningStrategies() {
+		board := g.GetBoard()
+		if winningStrategy.CheckWinner(board.GetSize(), move) {
+			g.gameState = ENDED
+			g.winner = move.GetPlayer()
+			return true
+		}
+	}
 	return false
 }
 

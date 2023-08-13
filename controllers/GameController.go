@@ -1,14 +1,13 @@
 package controllers
 
 import (
-	"github.com/hawk-eye03/LLD/TicTacToe/models"
-	"github.com/hawk-eye03/LLD/TicTacToe/strategies/winningStrategies"
+	"github.com/hawk-eye03/TicTacToe/models"
 )
 
 type GameController struct {
 }
 
-func (gc *GameController) CreateGame(dimension int, players []models.IPlayer, winningStrategies []winningStrategies.WinningStrategy) *models.Game {
+func (gc *GameController) CreateGame(dimension int, players []models.IPlayer, winningStrategies []models.WinningStrategy) *models.Game {
 	GameBuilder := &models.GameBuilder{}
 	return GameBuilder.SetDimension(dimension).SetPlayers(players).SetWinningStrategies(winningStrategies).Build()
 }
@@ -17,8 +16,8 @@ func (gc *GameController) DisplayBoard(game *models.Game) {
 	game.PrintBoard()
 }
 
-func (gc *GameController) Undo() {
-
+func (gc *GameController) Undo(game *models.Game) {
+	game.UndoMove()
 }
 
 func (gc *GameController) Makemove(game *models.Game) {

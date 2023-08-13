@@ -1,5 +1,5 @@
 package models
 
-type IPlayer interface {
+type BotPlayingStrategy interface {
 	MakeMove(game *Game) Cell
 }

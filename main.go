@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/hawk-eye03/LLD/TicTacToe/controllers"
-	"github.com/hawk-eye03/LLD/TicTacToe/models"
+	"github.com/hawk-eye03/TicTacToe/controllers"
+	"github.com/hawk-eye03/TicTacToe/models"
 )
 
 func main() {
@@ -13,12 +13,15 @@ func main() {
 
 	// Initialize number of players
 	players := []models.IPlayer{
-		models.NewPlayer("X", "P1", models.HUMAN),
-		models.NewBot(models.EASY, models.NewPlayer("O", "P2", models.BOT)),
+		models.NewPlayer("X", "HUMANITY", models.HUMAN),
+		models.NewBot(models.EASY, models.NewPlayer("O", "BOT", models.BOT)),
 	}
 
+	dimension := 3
 	// Create a new Game with set of dimension, players & winning strategies
-	game := gameController.CreateGame(3, players, nil)
+	game := gameController.CreateGame(dimension, players, []models.WinningStrategy{models.NewOrderOneColumnWinningStrategy(dimension, players), models.NewOrderOneRowWinningStrategy(dimension, players), models.NewOrderOneDiagonalWinningStrategy(dimension, players)})
+
+	fmt.Println("\n------------------Game is starting------------------")
 
 	for gameController.GetGameStatus(game) == models.IN_PROGRESS {
 		// Print the current state of board
@@ -35,7 +38,7 @@ func main() {
 		fmt.Println()
 
 		if input == "y" {
-			gameController.Undo()
+			gameController.Undo(game)
 		} else if input == "n" {
 			gameController.Makemove(game)
 		} else {
@@ -44,4 +47,5 @@ func main() {
 	}
 
 	gameController.PrintResult(*game)
+	gameController.DisplayBoard(game)
 }

@@ -1,35 +1,32 @@
 package models
 
-import (
-	"fmt"
-
-	"github.com/hawk-eye03/LLD/TicTacToe/strategies/botPlayingStrategies"
-)
-
 type Bot struct {
 	player             Player
 	botDifficultyLevel BotDifficultyLevel
+	botPlayingStrategy BotPlayingStrategy
 }
 
-func NewBot(difficultyLevel BotDifficultyLevel, player *Player) *Bot {
+func NewBot(botDifficultyLevel BotDifficultyLevel, player *Player) *Bot {
+	BotPlayingStrategyFactory := BotPlayingStrategyFactory{}
 	return &Bot{
 		player:             *player,
-		botDifficultyLevel: difficultyLevel,
+		botDifficultyLevel: botDifficultyLevel,
+		botPlayingStrategy: BotPlayingStrategyFactory.GetBotPlayingStrategyForDifficultyLevel(botDifficultyLevel),
 	}
-}
-
-func (b *Bot) GetInfo() {
-	fmt.Println("I am a bot")
 }
 
 func (b *Bot) GetBotPlayerInfo() Player {
 	return b.player
 }
 
-func (b *Bot) GetBotDifficultyLevel() botPlayingStrategies.BotPlayingStrategy {
+func (b *Bot) GetBotDifficultyLevel() BotDifficultyLevel {
 	return b.botDifficultyLevel
 }
 
 func (b *Bot) SetBotDifficultyLevel(bdl BotDifficultyLevel) {
 	b.botDifficultyLevel = bdl
+}
+
+func (b *Bot) MakeMove(game *Game) Cell {
+	return b.botPlayingStrategy.MakeMove(game)
 }

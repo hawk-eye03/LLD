@@ -16,9 +16,6 @@ func NewPlayer(symbol string, name string, playerType PlayerType) *Player {
 	}
 }
 
-func (p *Player) GetInfo() {
-	fmt.Println("I am a Human")
-}
 func (p *Player) SetSymbol(symbol string) {
 	p.symbol = symbol
 }
@@ -41,4 +38,22 @@ func (p *Player) GetSymbol() string {
 
 func (p *Player) GetName() string {
 	return p.name
+}
+
+func (p *Player) MakeMove(game *Game) Cell {
+	var row, col int
+
+	fmt.Print("Enter row (starting from 0): ")
+
+	_, err1 := fmt.Scanln(&row)
+	if err1 != nil {
+		return *NewCell(-1, -1)
+	}
+
+	fmt.Print("Enter col (starting from 0): ")
+	_, err2 := fmt.Scanln(&col)
+	if err2 != nil {
+		return *NewCell(-1, -1)
+	}
+	return *NewCell(row, col)
 }
